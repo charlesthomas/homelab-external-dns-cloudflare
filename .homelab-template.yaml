@@ -1,0 +1,25 @@
+_commit: v1.6.15-1-ge6a6893
+_src_path: /home/crthomas/code/charlesthomas/homelab-template
+additionalResources: ''
+backups: false
+helm: true
+helmCrds: false
+helmName: external-dns
+helmRelease: external-dns-cloudflare
+helmRepo: https://kubernetes-sigs.github.io/external-dns/
+helmValues: helm/values.yaml
+helmVersion: ''
+ingress: false
+labels: |-
+  app.kubernetes.io/instance: external-dns-cloudflare
+  app.kubernetes.io/name: cloudflare
+name: external-dns-cloudflare
+namespace: external-dns
+pvc: false
+reloader: true
+resources:
+- external-secrets.yaml
+service: false
+serviceAccount: false
+upstreamURL: https://github.com/kubernetes-sigs/external-dns
+url: https://github.com/charlesthomas/homelab-external-dns-cloudflare

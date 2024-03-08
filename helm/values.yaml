@@ -1,0 +1,19 @@
+nameOverride: cloudflare
+image:
+  tag: "v0.14.0"
+  pullPolicy: IfNotPresent
+
+logLevel: debug
+interval: 1m
+
+provider: cloudflare
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare
+        key: api-key
+
+extraArgs:
+- --ingress-class=nginx-external
+- --cloudflare-dns-records-per-page=5000
