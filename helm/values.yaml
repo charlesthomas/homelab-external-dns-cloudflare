@@ -15,5 +15,4 @@ env:
         key: api-key
 
 extraArgs:
-- --ingress-class=nginx-external
 - --cloudflare-dns-records-per-page=5000
