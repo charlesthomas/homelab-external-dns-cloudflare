@@ -1,0 +1,87 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+    repo: https://github.com/charlesthomas/homelab-external-dns-cloudflare
+  labels:
+    app.kubernetes.io/instance: external-dns-cloudflare
+    app.kubernetes.io/name: cloudflare
+    app.kubernetes.io/version: 0.16.1
+  name: external-dns-cloudflare
+  namespace: external-dns-cloudflare
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: external-dns-cloudflare
+      app.kubernetes.io/name: cloudflare
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        repo: https://github.com/charlesthomas/homelab-external-dns-cloudflare
+      labels:
+        app.kubernetes.io/instance: external-dns-cloudflare
+        app.kubernetes.io/name: cloudflare
+    spec:
+      containers:
+        - args:
+            - --log-level=debug
+            - --log-format=text
+            - --interval=1m
+            - --source=service
+            - --source=ingress
+            - --policy=upsert-only
+            - --registry=txt
+            - --provider=cloudflare
+            - --cloudflare-dns-records-per-page=5000
+          env:
+            - name: CF_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: api-key
+                  name: cloudflare
+          image: registry.k8s.io/external-dns/external-dns:v0.14.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: external-dns
+          ports:
+            - containerPort: 7979
+              name: http
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 65532
+            runAsNonRoot: true
+            runAsUser: 65532
+      securityContext:
+        fsGroup: 65534
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: external-dns-cloudflare
