@@ -5,9 +5,11 @@ namespace: external-dns-cloudflare
 
 commonAnnotations:
   repo: https://github.com/charlesthomas/homelab-external-dns-cloudflare
-commonLabels:
-  app.kubernetes.io/instance: external-dns-cloudflare
-  app.kubernetes.io/name: cloudflare
+labels:
+- includeSelectors: true
+  pairs:
+    app.kubernetes.io/instance: external-dns-cloudflare
+    app.kubernetes.io/name: cloudflare
 
 resources:
 - resources/deployments.yaml
